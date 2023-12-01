@@ -1,4 +1,7 @@
 import Shader from './Shader.js';
+import Mesh from './Mesh.js';
+import Vertex from './Vertex.js';
+import { Vec2, Vec3 } from './Vector.js';
 
 let gl = null;
 let glCanvas = null;
@@ -9,109 +12,78 @@ let currentRotation = [0, 1];
 let currentScale = [1.0, 1.0];
 
 // Vertex information
-let vertices;
-let vertexBuffer;
-let vertexNumComponents;
-let vertexCount;
+let mesh;
+let vertices = [];
+let currVertex;
 
 // Rendering data shared with the scaler
-let shader = new Shader();
 let uScalingFactor;
-let uGlobalColor;
 let uRotationVector;
-let aVertexPosition;
 
 // Animation timing
 let currentAngle;
 let previousTime = 0.0;
 let degreesPerSecond = 90.0;
 
-function animateScene() {
+// Fonction a executer lorsque la page charge
+window.addEventListener("load", init, false);
+
+async function init() {
+	glCanvas = document.getElementById("glcanvas");
+	gl = glCanvas.getContext("webgl");
+
+	aspectRatio = glCanvas.width / glCanvas.height;
+	currentRotation = [0, 1];
+	currentScale = [1.0, aspectRatio];
+
+	currVertex = new Vertex(new Vec2(-0.5, 0.5), new Vec3());
+	vertices.push(currVertex);
+	currVertex = new Vertex(new Vec2(0.5, 0.5), new Vec3());
+	vertices.push(currVertex);
+	currVertex = new Vertex(new Vec2(0.5, -0.5), new Vec3());
+	vertices.push(currVertex);
+	currVertex = new Vertex(new Vec2(-0.5, 0.5), new Vec3());
+	vertices.push(currVertex);
+	currVertex = new Vertex(new Vec2(0.5, -0.5), new Vec3());
+	vertices.push(currVertex);
+	currVertex = new Vertex(new Vec2(-0.5, -0.5), new Vec3());
+	vertices.push(currVertex);
+
+	mesh = new Mesh(vertices);	
+	await mesh.setup()
+	
+	currentAngle = 0.0;
+
+	drawLoop();
+}
+
+function drawLoop() {
 	gl.viewport(0, 0, glCanvas.width, glCanvas.height);
 	gl.clearColor(0.8, 0.9, 1.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
-  
+
 	const radians = (currentAngle * Math.PI) / 180.0;
 	currentRotation[0] = Math.sin(radians);
 	currentRotation[1] = Math.cos(radians);
-  
-	gl.useProgram(shader.program);
-  
-	uScalingFactor = gl.getUniformLocation(shader.program, "uScalingFactor");
-	uGlobalColor = gl.getUniformLocation(shader.program, "uGlobalColor");
-	uRotationVector = gl.getUniformLocation(shader.program, "uRotationVector");
+
+	gl.useProgram(mesh.attachedShader.program);
+
+	uScalingFactor = gl.getUniformLocation(mesh.attachedShader.program, "uScalingFactor");
+	uRotationVector = gl.getUniformLocation(mesh.attachedShader.program, "uRotationVector");
 	gl.uniform2fv(uScalingFactor, currentScale);
 	gl.uniform2fv(uRotationVector, currentRotation);
-	gl.uniform4fv(uGlobalColor, [0.1, 0.7, 0.2, 1.0]);
-  
-	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  
-	aVertexPosition = gl.getAttribLocation(shader.program, "aVertexPosition");
-  
-	gl.enableVertexAttribArray(aVertexPosition);
-	gl.vertexAttribPointer(
-	  aVertexPosition,
-	  vertexNumComponents,
-	  gl.FLOAT,
-	  false,
-	  0,
-	  0,
-	);
-  
-	gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
-  
+
+	mesh.draw();
+
 	requestAnimationFrame((currentTime) => {
-	  const deltaAngle =
-		((currentTime - previousTime) / 1000.0) * degreesPerSecond;
-  
-	  currentAngle = (currentAngle + deltaAngle) % 360;
-  
-	  previousTime = currentTime;
-	  animateScene();
+		const deltaAngle =
+			((currentTime - previousTime) / 1000.0) * degreesPerSecond;
+
+		currentAngle = (currentAngle + deltaAngle) % 360;
+
+		previousTime = currentTime;
+		drawLoop();
 	});
-  }
-  
-// Fonction a executer lorsque la page charge
-window.addEventListener("load", startup, false);
-
-async function startup() {
-  glCanvas = document.getElementById("glcanvas");
-  gl = glCanvas.getContext("webgl");
-
-  const shaderSet = [
-    {
-      type: gl.VERTEX_SHADER,
-      filePath: "./vs.glsl",
-    },
-    {
-      type: gl.FRAGMENT_SHADER,
-      filePath: "./fs.glsl",
-    },
-  ];
-
-  await shader.buildShaderProgram(shaderSet);
-
-  aspectRatio = glCanvas.width / glCanvas.height;
-  currentRotation = [0, 1];
-  currentScale = [1.0, aspectRatio];
-
-  vertices = new Float32Array([
-    -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5,
-  ]);
-
-  vertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-  // Link 
-  gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-
-  vertexNumComponents = 2;
-  vertexCount = vertices.length / vertexNumComponents;
-
-  currentAngle = 0.0;
-
-  animateScene();
 }
 
 export default gl;
