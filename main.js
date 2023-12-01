@@ -24,8 +24,14 @@ let currentAngle;
 let previousTime = 0.0;
 let degreesPerSecond = 90.0;
 
-function compileShader(id, type) {
-	const code = document.getElementById(id).firstChild.nodeValue;
+async function compileShader(filePath, type) {
+	const response = await fetch(filePath);
+	if (!response.ok) {
+		console.error(`Unable to fetch shader file: ${filePath}`);
+		return null;
+	}
+
+	const code = await response.text();
 	const shader = gl.createShader(type);
   
 	gl.shaderSource(shader, code);
@@ -43,16 +49,18 @@ function compileShader(id, type) {
 }
   
 
-function buildShaderProgram(shaderInfo) {
+async function buildShaderProgram(shaderInfo) {
 	const program = gl.createProgram();
   
-	shaderInfo.forEach((desc) => {
-	  const shader = compileShader(desc.id, desc.type);
-  
-	  if (shader) {
-		gl.attachShader(program, shader);
-	  }
-	});
+	// Utilise Promise.all pour attendre toutes les compilations de shader
+    await Promise.all(shaderInfo.map(async (desc) => {
+        const shader = await compileShader(desc.filePath, desc.type);
+
+        if (shader) {
+            gl.attachShader(program, shader);
+        }
+    }));
+
   
 	gl.linkProgram(program);
   
@@ -109,26 +117,25 @@ function animateScene() {
 	});
   }
   
-
 // Fonction a executer lorsque la page charge
 window.addEventListener("load", startup, false);
 
-function startup() {
+async function startup() {
   glCanvas = document.getElementById("glcanvas");
   gl = glCanvas.getContext("webgl");
 
   const shaderSet = [
     {
       type: gl.VERTEX_SHADER,
-      id: "vertex-shader",
+      filePath: "./vs.glsl",
     },
     {
       type: gl.FRAGMENT_SHADER,
-      id: "fragment-shader",
+      filePath: "./fs.glsl",
     },
   ];
 
-  shaderProgram = buildShaderProgram(shaderSet);
+  shaderProgram = await buildShaderProgram(shaderSet);
 
   aspectRatio = glCanvas.width / glCanvas.height;
   currentRotation = [0, 1];
