@@ -1,3 +1,5 @@
+import Shader from './Shader.js';
+
 let gl = null;
 let glCanvas = null;
 
@@ -13,64 +15,16 @@ let vertexNumComponents;
 let vertexCount;
 
 // Rendering data shared with the scaler
+let shader = new Shader();
 let uScalingFactor;
 let uGlobalColor;
 let uRotationVector;
 let aVertexPosition;
 
 // Animation timing
-let shaderProgram;
 let currentAngle;
 let previousTime = 0.0;
 let degreesPerSecond = 90.0;
-
-async function compileShader(filePath, type) {
-	const response = await fetch(filePath);
-	if (!response.ok) {
-		console.error(`Unable to fetch shader file: ${filePath}`);
-		return null;
-	}
-
-	const code = await response.text();
-	const shader = gl.createShader(type);
-  
-	gl.shaderSource(shader, code);
-	gl.compileShader(shader);
-  
-	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-	  console.log(
-		`Error compiling ${
-		  type === gl.VERTEX_SHADER ? "vertex" : "fragment"
-		} shader:`,
-	  );
-	  console.log(gl.getShaderInfoLog(shader));
-	}
-	return shader;
-}
-  
-
-async function buildShaderProgram(shaderInfo) {
-	const program = gl.createProgram();
-  
-	// Utilise Promise.all pour attendre toutes les compilations de shader
-    await Promise.all(shaderInfo.map(async (desc) => {
-        const shader = await compileShader(desc.filePath, desc.type);
-
-        if (shader) {
-            gl.attachShader(program, shader);
-        }
-    }));
-
-  
-	gl.linkProgram(program);
-  
-	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-	  console.log("Error linking shader program:");
-	  console.log(gl.getProgramInfoLog(program));
-	}
-  
-	return program;
-}
 
 function animateScene() {
 	gl.viewport(0, 0, glCanvas.width, glCanvas.height);
@@ -81,18 +35,18 @@ function animateScene() {
 	currentRotation[0] = Math.sin(radians);
 	currentRotation[1] = Math.cos(radians);
   
-	gl.useProgram(shaderProgram);
+	gl.useProgram(shader.program);
   
-	uScalingFactor = gl.getUniformLocation(shaderProgram, "uScalingFactor");
-	uGlobalColor = gl.getUniformLocation(shaderProgram, "uGlobalColor");
-	uRotationVector = gl.getUniformLocation(shaderProgram, "uRotationVector");
+	uScalingFactor = gl.getUniformLocation(shader.program, "uScalingFactor");
+	uGlobalColor = gl.getUniformLocation(shader.program, "uGlobalColor");
+	uRotationVector = gl.getUniformLocation(shader.program, "uRotationVector");
 	gl.uniform2fv(uScalingFactor, currentScale);
 	gl.uniform2fv(uRotationVector, currentRotation);
 	gl.uniform4fv(uGlobalColor, [0.1, 0.7, 0.2, 1.0]);
   
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   
-	aVertexPosition = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	aVertexPosition = gl.getAttribLocation(shader.program, "aVertexPosition");
   
 	gl.enableVertexAttribArray(aVertexPosition);
 	gl.vertexAttribPointer(
@@ -135,7 +89,7 @@ async function startup() {
     },
   ];
 
-  shaderProgram = await buildShaderProgram(shaderSet);
+  await shader.buildShaderProgram(shaderSet);
 
   aspectRatio = glCanvas.width / glCanvas.height;
   currentRotation = [0, 1];
@@ -160,3 +114,4 @@ async function startup() {
   animateScene();
 }
 
+export default gl;
