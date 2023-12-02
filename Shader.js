@@ -31,8 +31,18 @@ class Shader {
 	}
 
 	async buildProgram(shaderInfo) {
+		if (!Array.isArray(shaderInfo) || shaderInfo.length !== 2) {
+            throw new Error("L'ensemble de shaders doit être un tableau contenant exactement deux éléments.");
+        }
+        const validTypes = [WebGL2RenderingContext.VERTEX_SHADER, WebGL2RenderingContext.FRAGMENT_SHADER];
+        for (const shader of shaderInfo) {
+            if (!shader || !shader.type || !validTypes.includes(shader.type) || !shader.filePath) {
+                throw new Error("Chaque shader de l'ensemble doit avoir un type valide et un chemin de fichier spécifié.");
+            }
+        }
+
 		this.program = this.gl.createProgram();
-		// Utilise Promise.all pour attendre toutes les compilations de shader
+
 		await Promise.all(shaderInfo.map(async (desc) => {
 			const shader = await this._compileShader(desc.filePath, desc.type);
 			if (shader) {

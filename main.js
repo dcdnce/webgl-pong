@@ -1,8 +1,4 @@
-import Shader from './Shader.js';
 import Paddle from './Paddle.js';
-import Mesh from './Mesh.js';
-import Vertex from './Vertex.js';
-import { Vec2, Vec3 } from './Vector.js';
 import { upKeyPressed, downKeyPressed } from './Event.js';
 
 let gl = null;

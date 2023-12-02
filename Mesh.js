@@ -3,7 +3,7 @@ import Vertex from './Vertex.js';
 import Shader from './Shader.js';
 
 class Mesh {
-	constructor(vertices, indices, randomColor = false) {
+	constructor(vertices, indices, randomColor = false, shaderInfo) {
 		this.gl = document.getElementById('glcanvas').getContext('webgl');
 		this.VBO = null;
 		this.EBO = null;
@@ -11,6 +11,7 @@ class Mesh {
 		this.indices = indices || [];
 		this.attachedShader = new Shader();
 		this.randomColor = randomColor;
+		this.shaderInfo = shaderInfo;
 	}
 
 	async setup() {
@@ -52,18 +53,7 @@ class Mesh {
 	}
 
 	async _setupShaders() {
-		const shaderSet = [
-		{
-			type: this.gl.VERTEX_SHADER,
-			filePath: "./vs.glsl",
-		},
-		{
-			type: this.gl.FRAGMENT_SHADER,
-			filePath: "./fs.glsl",
-		},
-		];
-
-		await this.attachedShader.buildProgram(shaderSet);
+		await this.attachedShader.buildProgram(this.shaderInfo);
 	}
 
 	draw() {

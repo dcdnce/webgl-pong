@@ -4,6 +4,17 @@ import Vertex from './Vertex.js';
 
 class Paddle extends Mesh {
 	constructor (width, height, color = null) {
+		const shaderInfo = [
+		{
+			type: WebGL2RenderingContext.VERTEX_SHADER,
+			filePath: "./paddle.vs",
+		},
+		{
+			type: WebGL2RenderingContext.FRAGMENT_SHADER,
+			filePath: "./paddle.fs",
+		},
+		];
+
 		const vertices = [
 			new Vertex (new Vec2(-width, -height), color),
 			new Vertex (new Vec2(width, -height), color),
@@ -13,7 +24,7 @@ class Paddle extends Mesh {
 
 		const indices = [0, 1, 2, 1, 2, 3];
 
-		super(vertices, indices, (color == null));
+		super(vertices, indices, (color == null), shaderInfo);
 
 		this._uPaddlePosition = new Vec2(0., 0.);
 	}
