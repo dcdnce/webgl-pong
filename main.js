@@ -1,4 +1,3 @@
-import Paddle from './Paddle.js';
 import { Vec3 } from './Vector.js';
 import Ball from './Ball.js';
 import { upKeyPressed, downKeyPressed } from './Event.js';
@@ -11,7 +10,7 @@ let aspectRatio;
 let currentScale = [1.0, 1.0];
 
 // Vertex information
-let paddle;
+let ball;
 
 // Rendering data shared with the scaler
 let uScalingFactor;
@@ -29,8 +28,8 @@ async function init() {
 	aspectRatio = glCanvas.width / glCanvas.height;
 	currentScale = [1.0, aspectRatio];
 
-	paddle = new Ball(0.1, 4, new Vec3(0., 0., 0.));
-	await paddle.setup()
+	ball = new Ball(0.1, 4, new Vec3(0., 0., 0.));
+	await ball.setup()
 	
 	drawLoop();
 }
@@ -40,12 +39,12 @@ function drawLoop() {
 	gl.clearColor(0.8, 0.9, 1.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.useProgram(paddle.attachedShader.program);
+    gl.useProgram(ball.attachedShader.program);
 
-    uScalingFactor = gl.getUniformLocation(paddle.attachedShader.program, "uScalingFactor");
+    uScalingFactor = gl.getUniformLocation(ball.attachedShader.program, "uScalingFactor");
     gl.uniform2fv(uScalingFactor, currentScale);
 
-    paddle.draw();
+    ball.draw();
 
 	// Delta time
     const currentTime = performance.now();
@@ -54,11 +53,14 @@ function drawLoop() {
 
 	//Events
     if (upKeyPressed) {
-        paddle.moveUp(deltaTime);
+        ball.moveUp(deltaTime);
     }
     if (downKeyPressed) {
-        paddle.moveDown(deltaTime);
+        ball.moveDown(deltaTime);
     }
+
+    //Position
+    ball.updatePosition(deltaTime);
 
     requestAnimationFrame(drawLoop);
 }

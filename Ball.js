@@ -37,24 +37,34 @@ class Ball extends Mesh {
 		super(vertices, indices, (color == null), shaderInfo);
 
 		this._uBallPosition = new Vec2(0., 0.);
+		this.speed = 0.1;
+		// this.acceleration = 0.;
+		this.direction = new Vec2(0., 0.);
 	}
 
-	moveUp(deltaTime) {
-        this._uBallPosition.y += 0.5 * deltaTime;
-		this.gl.useProgram(this.attachedShader.program);
-		this.gl.uniform2f(
-			this.gl.getUniformLocation(this.attachedShader.program, "uBallPosition"),
-			this._uBallPosition.x,
-			this._uBallPosition.y)	
+    updatePosition(deltaTime) {
+        // Mettre à jour la vitesse en fonction de l'accélération
+        // this.speed += this.acceleration * deltaTime;
+
+		//new position = position + (direction * speed)
+        const deltaPosition = this.direction.clone().multiplyScalar(this.speed * deltaTime);
+        this._uBallPosition.add(deltaPosition);
+
+        this.gl.useProgram(this.attachedShader.program);
+        this.gl.uniform2f(
+            this.gl.getUniformLocation(this.attachedShader.program, "uBallPosition"),
+            this._uBallPosition.x,
+            this._uBallPosition.y
+        );
     }
 
-    moveDown(deltaTime) {
-        this._uBallPosition.y -= 0.5 * deltaTime;
-		this.gl.useProgram(this.attachedShader.program);
-		this.gl.uniform2f(
-			this.gl.getUniformLocation(this.attachedShader.program, "uBallPosition"),
-		this._uBallPosition.x,
-		this._uBallPosition.y)	
+
+	moveUp() {
+        this.direction.y = 1.0;
+    }
+
+    moveDown() {
+        this.direction.y = -1.0;
     }
 }
 
