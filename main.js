@@ -14,6 +14,7 @@ let currentScale = [1.0, 1.0];
 // Vertex information
 let mesh;
 let vertices = [];
+let indices = [];
 let currVertex;
 
 // Rendering data shared with the scaler
@@ -42,14 +43,11 @@ async function init() {
 	vertices.push(currVertex);
 	currVertex = new Vertex(new Vec2(0.5, -0.5), new Vec3());
 	vertices.push(currVertex);
-	currVertex = new Vertex(new Vec2(-0.5, 0.5), new Vec3());
-	vertices.push(currVertex);
-	currVertex = new Vertex(new Vec2(0.5, -0.5), new Vec3());
-	vertices.push(currVertex);
 	currVertex = new Vertex(new Vec2(-0.5, -0.5), new Vec3());
 	vertices.push(currVertex);
+	indices = [0, 1, 2, 0, 3, 2];
 
-	mesh = new Mesh(vertices);	
+	mesh = new Mesh(vertices, indices);	
 	await mesh.setup()
 	
 	currentAngle = 0.0;

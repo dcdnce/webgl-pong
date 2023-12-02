@@ -3,16 +3,16 @@ import Vertex from './Vertex.js';
 import Shader from './Shader.js';
 
 class Mesh {
-	// constructor(vertices = null, indices = null) {
-	constructor(vertices = null) {
+	constructor(vertices = null, indices = null) {
+	// constructor(vertices = null) {
 		this.gl = document.getElementById('glcanvas').getContext('webgl');
 		this.VBO = null;
-		// this.EBO = null;
+		this.EBO = null;
 		this.vertices = vertices || [new Vertex()];
-		if (vertices === null || vertices.length === 0) {
-            throw new Error("La classe Mesh nécessite des données de vertices non nulles et non vides.");
-		}
-		// this.indices = indices || [];
+		// if (vertices === null || vertices.length === 0) {
+        //     throw new Error("La classe Mesh nécessite des données de vertices non nulles et non vides.");
+		// }
+		this.indices = indices || [];
 		this.attachedShader = new Shader();
 	}
 
@@ -34,15 +34,17 @@ class Mesh {
 
 	_setupBuffers() {
 		this.VBO = this.gl.createBuffer();
+		this.EBO = this.gl.createBuffer();
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.VBO);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.EBO);
 
 		// Send data
 		const verticesData = [];
 		for (let i = 0; i < this.vertices.length; i++) {
 			verticesData.push(...this.vertices[i].toArray());
 		}
-		console.log(verticesData);
 		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(verticesData), this.gl.STATIC_DRAW);
+		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.STATIC_DRAW);
 
 		//Link
 		this.gl.enableVertexAttribArray(0);
@@ -71,7 +73,8 @@ class Mesh {
 
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.VBO);
 
-		this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertices.length);
+		// this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertices.length);
+		this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
 	}
