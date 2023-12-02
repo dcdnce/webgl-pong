@@ -3,30 +3,23 @@ import Paddle from './Paddle.js';
 import Mesh from './Mesh.js';
 import Vertex from './Vertex.js';
 import { Vec2, Vec3 } from './Vector.js';
+import { upKeyPressed, downKeyPressed } from './Event.js';
 
 let gl = null;
 let glCanvas = null;
 
 // Aspect ratio and coordinate system
 let aspectRatio;
-let currentRotation = [0, 1];
 let currentScale = [1.0, 1.0];
 
 // Vertex information
-let mesh;
 let paddle;
-let vertices = [];
-let indices = [];
-let currVertex;
 
 // Rendering data shared with the scaler
 let uScalingFactor;
-let uRotationVector;
 
 // Animation timing
-let currentAngle;
 let previousTime = 0.0;
-let degreesPerSecond = 90.0;
 
 // Fonction a executer lorsque la page charge
 window.addEventListener("load", init, false);
@@ -36,14 +29,11 @@ async function init() {
 	gl = glCanvas.getContext("webgl");
 
 	aspectRatio = glCanvas.width / glCanvas.height;
-	currentRotation = [0, 1];
 	currentScale = [1.0, aspectRatio];
 
-	paddle = new Paddle(0.05, 0.2, new Vec2(0., 0.), new Vec3(1.0, 0.5, 0.0));	
+	paddle = new Paddle(0.05, 0.2);	
 	await paddle.setup()
 	
-	currentAngle = 0.0;
-
 	drawLoop();
 }
 
@@ -52,28 +42,27 @@ function drawLoop() {
 	gl.clearColor(0.8, 0.9, 1.0, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
-	const radians = (currentAngle * Math.PI) / 180.0;
-	currentRotation[0] = Math.sin(radians);
-	currentRotation[1] = Math.cos(radians);
+    gl.useProgram(paddle.attachedShader.program);
 
-	gl.useProgram(paddle.attachedShader.program);
+    uScalingFactor = gl.getUniformLocation(paddle.attachedShader.program, "uScalingFactor");
+    gl.uniform2fv(uScalingFactor, currentScale);
 
-	uScalingFactor = gl.getUniformLocation(paddle.attachedShader.program, "uScalingFactor");
-	uRotationVector = gl.getUniformLocation(paddle.attachedShader.program, "uRotationVector");
-	gl.uniform2fv(uScalingFactor, currentScale);
-	gl.uniform2fv(uRotationVector, currentRotation);
+    paddle.draw();
 
-	paddle.draw();
+	// Delta time
+    const currentTime = performance.now();
+    const deltaTime = (currentTime - previousTime) / 1000.0;
+    previousTime = currentTime;
 
-	requestAnimationFrame((currentTime) => {
-		const deltaAngle =
-			((currentTime - previousTime) / 1000.0) * degreesPerSecond;
+	//Events
+    if (upKeyPressed) {
+        paddle.moveUp(deltaTime);
+    }
+    if (downKeyPressed) {
+        paddle.moveDown(deltaTime);
+    }
 
-		currentAngle = (currentAngle + deltaAngle) % 360;
-
-		previousTime = currentTime;
-		drawLoop();
-	});
+    requestAnimationFrame(drawLoop);
 }
 
 export default gl;
