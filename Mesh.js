@@ -3,21 +3,19 @@ import Vertex from './Vertex.js';
 import Shader from './Shader.js';
 
 class Mesh {
-	constructor(vertices = null, indices = null) {
-	// constructor(vertices = null) {
+	constructor(vertices, indices, randomColor = false) {
 		this.gl = document.getElementById('glcanvas').getContext('webgl');
 		this.VBO = null;
 		this.EBO = null;
 		this.vertices = vertices || [new Vertex()];
-		// if (vertices === null || vertices.length === 0) {
-        //     throw new Error("La classe Mesh nécessite des données de vertices non nulles et non vides.");
-		// }
 		this.indices = indices || [];
 		this.attachedShader = new Shader();
+		this.randomColor = randomColor;
 	}
 
 	async setup() {
-		// this._setupColors();
+		if (this.randomColor)
+			this._setupColors();
 		this._setupBuffers();
 		await this._setupShaders();
 	}

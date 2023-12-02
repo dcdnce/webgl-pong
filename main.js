@@ -39,7 +39,7 @@ async function init() {
 	currentRotation = [0, 1];
 	currentScale = [1.0, aspectRatio];
 
-	paddle = new Paddle(new Vec3(1.0, 0.5, 0.0));	
+	paddle = new Paddle(0.05, 0.2, new Vec2(0., 0.), new Vec3(1.0, 0.5, 0.0));	
 	await paddle.setup()
 	
 	currentAngle = 0.0;
