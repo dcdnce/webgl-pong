@@ -7,11 +7,11 @@ class Paddle extends Mesh {
 		const shaderInfo = [
 		{
 			type: WebGL2RenderingContext.VERTEX_SHADER,
-			filePath: "./paddle.vs",
+			filePath: "./entity.vs",
 		},
 		{
 			type: WebGL2RenderingContext.FRAGMENT_SHADER,
-			filePath: "./paddle.fs",
+			filePath: "./entity.fs",
 		},
 		];
 
@@ -26,25 +26,25 @@ class Paddle extends Mesh {
 
 		super(vertices, indices, (color == null), shaderInfo);
 
-		this._uPaddlePosition = new Vec2(0., 0.);
+		this._uEntityPosition = new Vec2(0., 0.);
 	}
 
 	moveUp(deltaTime) {
-        this._uPaddlePosition.y += 0.5 * deltaTime;
+        this._uEntityPosition.y += 0.5 * deltaTime;
 		this.gl.useProgram(this.attachedShader.program);
 		this.gl.uniform2f(
-			this.gl.getUniformLocation(this.attachedShader.program, "uPaddlePosition"),
-			this._uPaddlePosition.x,
-			this._uPaddlePosition.y)	
+			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
+			this._uEntityPosition.x,
+			this._uEntityPosition.y)	
     }
 
     moveDown(deltaTime) {
-        this._uPaddlePosition.y -= 0.5 * deltaTime;
+        this._uEntityPosition.y -= 0.5 * deltaTime;
 		this.gl.useProgram(this.attachedShader.program);
 		this.gl.uniform2f(
-			this.gl.getUniformLocation(this.attachedShader.program, "uPaddlePosition"),
-		this._uPaddlePosition.x,
-		this._uPaddlePosition.y)	
+			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
+		this._uEntityPosition.x,
+		this._uEntityPosition.y)	
     }
 }
 

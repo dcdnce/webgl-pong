@@ -18,7 +18,6 @@ let uScalingFactor;
 // Animation timing
 let previousTime = 0.0;
 
-// Fonction a executer lorsque la page charge
 window.addEventListener("load", init, false);
 
 async function init() {
@@ -53,10 +52,10 @@ function drawLoop() {
 
     //Events
     // if (upKeyPressed) {
-    //     ball.moveUp(deltaTime);
+    //     paddle.moveUp(deltaTime);
     // }
     // if (downKeyPressed) {
-    //     ball.moveDown(deltaTime);
+    //     paddle.moveDown(deltaTime);
     // }
 
     // Collisions
@@ -69,25 +68,25 @@ function drawLoop() {
 }
 
 function collisionWithWall(ball) {
-    if ((ball._uBallPosition.x - ball.radius) * currentScale[0] < -1)
+    if ((ball._uEntityPosition.x - ball.radius) * currentScale[0] < -1)
     {
         ball.direction.x = Math.abs(ball.direction.x);
         ball.acceleration += 0.01;
     }
 
-    if ((ball._uBallPosition.x + ball.radius) * currentScale[0] > 1.)
+    if ((ball._uEntityPosition.x + ball.radius) * currentScale[0] > 1.)
     {
         ball.direction.x = -Math.abs(ball.direction.x);
         ball.acceleration += 0.01;
     }
 
-    if ((ball._uBallPosition.y + ball.radius) * currentScale[1] > 1.)
+    if ((ball._uEntityPosition.y + ball.radius) * currentScale[1] > 1.)
     {
         ball.direction.y = -Math.abs(ball.direction.y);
         ball.acceleration += 0.01;
     }
 
-    if ((ball._uBallPosition.y - ball.radius) * currentScale[1] < -1.)
+    if ((ball._uEntityPosition.y - ball.radius) * currentScale[1] < -1.)
     {
         ball.direction.y = Math.abs(ball.direction.y);
         ball.acceleration += 0.01;

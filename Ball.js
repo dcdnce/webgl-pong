@@ -7,11 +7,11 @@ class Ball extends Mesh {
 		const shaderInfo = [
 		{
 			type: WebGL2RenderingContext.VERTEX_SHADER,
-			filePath: "./ball.vs",
+			filePath: "./entity.vs",
 		},
 		{
 			type: WebGL2RenderingContext.FRAGMENT_SHADER,
-			filePath: "./ball.fs",
+			filePath: "./entity.fs",
 		},
 		];
 
@@ -37,7 +37,7 @@ class Ball extends Mesh {
 		super(vertices, indices, (color == null), shaderInfo);
 
 		this.radius = radius;
-		this._uBallPosition = new Vec2(0., 0.);
+		this._uEntityPosition = new Vec2(0., 0.);
 		this.speed = 1;
 		this.acceleration = 0.;
 		this.direction = new Vec2(Math.random(), Math.random());
@@ -49,22 +49,14 @@ class Ball extends Mesh {
 
 		//new position = position + (direction * speed)
         const deltaPosition = this.direction.clone().multiplyScalar(this.speed * deltaTime);
-        this._uBallPosition.add(deltaPosition);
+        this._uEntityPosition.add(deltaPosition);
 
         this.gl.useProgram(this.attachedShader.program);
         this.gl.uniform2f(
-            this.gl.getUniformLocation(this.attachedShader.program, "uBallPosition"),
-            this._uBallPosition.x,
-            this._uBallPosition.y
+            this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
+            this._uEntityPosition.x,
+            this._uEntityPosition.y
         );
-    }
-
-	moveUp() {
-        this.direction.y = 1.0;
-    }
-
-    moveDown() {
-        this.direction.y = -1.0;
     }
 }
 

@@ -1,5 +1,7 @@
 - Bounding Box Class
-- Scene Class
+- Scene Class ?
+- Collisions (paddle, wall)
 
 - UpdatePosition in shader ?
-- Common shader for all game object ? 
+- Factoriser emplacement uScalingFactor
+- Common shader for game entities ✅
