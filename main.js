@@ -1,4 +1,6 @@
 import Paddle from './Paddle.js';
+import { Vec3 } from './Vector.js';
+import Ball from './Ball.js';
 import { upKeyPressed, downKeyPressed } from './Event.js';
 
 let gl = null;
@@ -27,7 +29,7 @@ async function init() {
 	aspectRatio = glCanvas.width / glCanvas.height;
 	currentScale = [1.0, aspectRatio];
 
-	paddle = new Paddle(0.05, 0.2);	
+	paddle = new Ball(0.1, 4, new Vec3(0., 0., 0.));
 	await paddle.setup()
 	
 	drawLoop();

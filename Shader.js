@@ -54,7 +54,7 @@ class Shader {
 
 		if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
 			console.log("Error linking shader program:");
-			console.log(this.gl.getProgramInfoLog(program));
+			console.log(this.gl.getProgramInfoLog(this.program));
 		}
 	}
 }
