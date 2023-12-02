@@ -17,7 +17,7 @@ class Mesh {
 	}
 
 	async setup() {
-		this._setupColors();
+		// this._setupColors();
 		this._setupBuffers();
 		await this._setupShaders();
 	}

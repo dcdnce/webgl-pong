@@ -1,4 +1,5 @@
 import Shader from './Shader.js';
+import Paddle from './Paddle.js';
 import Mesh from './Mesh.js';
 import Vertex from './Vertex.js';
 import { Vec2, Vec3 } from './Vector.js';
@@ -13,6 +14,7 @@ let currentScale = [1.0, 1.0];
 
 // Vertex information
 let mesh;
+let paddle;
 let vertices = [];
 let indices = [];
 let currVertex;
@@ -37,18 +39,8 @@ async function init() {
 	currentRotation = [0, 1];
 	currentScale = [1.0, aspectRatio];
 
-	currVertex = new Vertex(new Vec2(-0.5, 0.5), new Vec3());
-	vertices.push(currVertex);
-	currVertex = new Vertex(new Vec2(0.5, 0.5), new Vec3());
-	vertices.push(currVertex);
-	currVertex = new Vertex(new Vec2(0.5, -0.5), new Vec3());
-	vertices.push(currVertex);
-	currVertex = new Vertex(new Vec2(-0.5, -0.5), new Vec3());
-	vertices.push(currVertex);
-	indices = [0, 1, 2, 0, 3, 2];
-
-	mesh = new Mesh(vertices, indices);	
-	await mesh.setup()
+	paddle = new Paddle(new Vec3(1.0, 0.5, 0.0));	
+	await paddle.setup()
 	
 	currentAngle = 0.0;
 
@@ -64,14 +56,14 @@ function drawLoop() {
 	currentRotation[0] = Math.sin(radians);
 	currentRotation[1] = Math.cos(radians);
 
-	gl.useProgram(mesh.attachedShader.program);
+	gl.useProgram(paddle.attachedShader.program);
 
-	uScalingFactor = gl.getUniformLocation(mesh.attachedShader.program, "uScalingFactor");
-	uRotationVector = gl.getUniformLocation(mesh.attachedShader.program, "uRotationVector");
+	uScalingFactor = gl.getUniformLocation(paddle.attachedShader.program, "uScalingFactor");
+	uRotationVector = gl.getUniformLocation(paddle.attachedShader.program, "uRotationVector");
 	gl.uniform2fv(uScalingFactor, currentScale);
 	gl.uniform2fv(uRotationVector, currentRotation);
 
-	mesh.draw();
+	paddle.draw();
 
 	requestAnimationFrame((currentTime) => {
 		const deltaAngle =
