@@ -3,7 +3,7 @@ import { Vec2, Vec3 } from './Vector.js';
 import Vertex from './Vertex.js';
 
 class Ball extends Mesh {
-	constructor (radius = 0.1, resolution = 4.0, color = null) {
+	constructor (radius = 0.01, resolution = 4.0, color = null) {
 		const shaderInfo = [
 		{
 			type: WebGL2RenderingContext.VERTEX_SHADER,
@@ -36,15 +36,16 @@ class Ball extends Mesh {
 
 		super(vertices, indices, (color == null), shaderInfo);
 
+		this.radius = radius;
 		this._uBallPosition = new Vec2(0., 0.);
-		this.speed = 0.1;
-		// this.acceleration = 0.;
-		this.direction = new Vec2(0., 0.);
+		this.speed = 1;
+		this.acceleration = 0.;
+		this.direction = new Vec2(Math.random(), Math.random());
+		this.direction.normalize();	  
 	}
 
     updatePosition(deltaTime) {
-        // Mettre à jour la vitesse en fonction de l'accélération
-        // this.speed += this.acceleration * deltaTime;
+        this.speed += this.acceleration * deltaTime;
 
 		//new position = position + (direction * speed)
         const deltaPosition = this.direction.clone().multiplyScalar(this.speed * deltaTime);
@@ -57,7 +58,6 @@ class Ball extends Mesh {
             this._uBallPosition.y
         );
     }
-
 
 	moveUp() {
         this.direction.y = 1.0;
