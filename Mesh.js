@@ -45,11 +45,8 @@ class Mesh {
 		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(verticesData), this.gl.STATIC_DRAW);
 		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.STATIC_DRAW);
 
-		//Link
-		this.gl.enableVertexAttribArray(0);
-		this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-		this.gl.enableVertexAttribArray(1);
-		this.gl.vertexAttribPointer(1, 3, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
 	}
 
 	async _setupShaders() {
@@ -60,11 +57,18 @@ class Mesh {
 		this.gl.useProgram(this.attachedShader.program);
 
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.VBO);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.EBO);
 
-		// this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertices.length);
+		// Linking - replaces vao
+		this.gl.enableVertexAttribArray(0);
+		this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+		this.gl.enableVertexAttribArray(1);
+		this.gl.vertexAttribPointer(1, 3, this.gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+
 		this.gl.drawElements(this.gl.TRIANGLES, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
 	}
 }
 

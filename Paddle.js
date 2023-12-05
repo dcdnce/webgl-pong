@@ -1,9 +1,10 @@
 import Mesh from './Mesh.js'
 import { Vec2, Vec3 } from './Vector.js';
 import Vertex from './Vertex.js';
+import { upKeyPressed, downKeyPressed } from './Event.js';
 
 class Paddle extends Mesh {
-	constructor (width, height, color = null) {
+	constructor (width, height, color = null, position = new Vec2(0., 0.)) {
 		const shaderInfo = [
 		{
 			type: WebGL2RenderingContext.VERTEX_SHADER,
@@ -26,26 +27,20 @@ class Paddle extends Mesh {
 
 		super(vertices, indices, (color == null), shaderInfo);
 
-		this._uEntityPosition = new Vec2(0., 0.);
+		this._uEntityPosition = position;
 	}
 
-	moveUp(deltaTime) {
-        this._uEntityPosition.y += 0.5 * deltaTime;
+	updatePosition(deltaTime) {
+		if (upKeyPressed)
+        	this._uEntityPosition.y += 0.5 * deltaTime;
+		if (downKeyPressed)
+        	this._uEntityPosition.y -= 0.5 * deltaTime;
 		this.gl.useProgram(this.attachedShader.program);
 		this.gl.uniform2f(
 			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
 			this._uEntityPosition.x,
 			this._uEntityPosition.y)	
-    }
-
-    moveDown(deltaTime) {
-        this._uEntityPosition.y -= 0.5 * deltaTime;
-		this.gl.useProgram(this.attachedShader.program);
-		this.gl.uniform2f(
-			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
-		this._uEntityPosition.x,
-		this._uEntityPosition.y)	
-    }
+	}
 }
 
 export default Paddle;
