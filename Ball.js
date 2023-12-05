@@ -38,9 +38,9 @@ class Ball extends Mesh {
 
 		this.radius = radius;
 		this._uEntityPosition = new Vec2(0., 0.);
-		this.speed = 1;
+		this.speed = 2;
 		this.acceleration = 0.;
-		this.direction = new Vec2(Math.random(), Math.random());
+		this.direction = new Vec2(-Math.random(), Math.random());
 		this.direction.normalize();	  
 	}
 
@@ -58,6 +58,17 @@ class Ball extends Mesh {
             this._uEntityPosition.y
         );
     }
+
+	computeBoundingBox(currentScale) {
+		this.boundingBoxLeft = this._uEntityPosition.x - this.radius;
+		this.boundingBoxRight = this._uEntityPosition.x + this.radius;
+		this.boundingBoxTop = this._uEntityPosition.y + this.radius;
+		this.boundingBoxBottom = this._uEntityPosition.y - this.radius;
+		this.boundingBoxLeft *= currentScale[0];
+		this.boundingBoxRight *= currentScale[0];
+		this.boundingBoxTop *= currentScale[1];
+		this.boundingBoxBottom *= currentScale[1];
+	}
 }
 
 export default Ball;

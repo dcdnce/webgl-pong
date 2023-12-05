@@ -28,7 +28,7 @@ class Paddle extends Mesh {
 		super(vertices, indices, (color == null), shaderInfo);
 
 		this._uEntityPosition = position;
-		this.speed = 1.0;
+		this.speed = 2.0;
 		this.width = width;
 		this.height = height;
 	}
@@ -38,15 +38,26 @@ class Paddle extends Mesh {
         	this._uEntityPosition.y += this.speed * deltaTime;
 		else if (downKeyPressed)
         	this._uEntityPosition.y -= this.speed * deltaTime;
-		else if (rightKeyPressed)
-        	this._uEntityPosition.x += this.speed * deltaTime;
-		else if (leftKeyPressed)
-        	this._uEntityPosition.x -= this.speed * deltaTime;
+		// else if (rightKeyPressed)
+        // 	this._uEntityPosition.x += this.speed * deltaTime;
+		// else if (leftKeyPressed)
+        // 	this._uEntityPosition.x -= this.speed * deltaTime;
 		this.gl.useProgram(this.attachedShader.program);
 		this.gl.uniform2f(
 			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
 			this._uEntityPosition.x,
 			this._uEntityPosition.y)	
+	}
+
+	computeBoundingBox(currentScale) {
+		this.boundingBoxLeft = this._uEntityPosition.x - this.width / 2;
+		this.boundingBoxRight = this._uEntityPosition.x + this.width / 2;
+		this.boundingBoxTop = this._uEntityPosition.y + this.height / 2;
+		this.boundingBoxBottom = this._uEntityPosition.y - this.height / 2;
+		this.boundingBoxLeft *= currentScale[0];
+		this.boundingBoxRight *= currentScale[0];
+		this.boundingBoxTop *= currentScale[1];
+		this.boundingBoxBottom *= currentScale[1];
 	}
 }
 

@@ -1,6 +1,6 @@
-- Bounding Box in Class ?
-- refactoriser collisions
+- Bounding Box in Class ✅
 - Collision ? -> decaler un objet au dehors de l'autre ✅
+- refactoriser collisions
 - Scene Class ?
 
 - UpdatePosition in shader ?

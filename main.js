@@ -28,9 +28,9 @@ async function init() {
     aspectRatio = glCanvas.width / glCanvas.height;
     currentScale = [1.0, aspectRatio];
 
-    player = new Paddle(0.01, 0.1, new Vec3(0., 0., 0.));
+    player = new Paddle(0.01, 0.1, new Vec3(0., 0., 0.), new Vec2(-0.9, -0.9));
     await player.setup();
-    ball = new Ball(0.05, 4, new Vec3(0., 0., 0.));
+    ball = new Ball(0.02, 1, new Vec3(0., 0., 0.));
     await ball.setup()
 
     drawLoop();
@@ -68,6 +68,9 @@ function drawLoop() {
 }
 
 function collisions() {
+    ball.computeBoundingBox(currentScale);
+    player.computeBoundingBox(currentScale);
+
     // Ball -> wall
     if ((ball._uEntityPosition.x - ball.radius) * currentScale[0] < -1)
         ball.direction.x = Math.abs(ball.direction.x);
@@ -78,43 +81,24 @@ function collisions() {
     else if ((ball._uEntityPosition.y - ball.radius) * currentScale[1] < -1.)
         ball.direction.y = Math.abs(ball.direction.y);
 
+    // Player -> wall
+
+
     playerBallCollision()
 }
 
 function playerBallCollision() {
-    let paddleLeft = player._uEntityPosition.x - player.width / 2;
-    let paddleRight = player._uEntityPosition.x + player.width / 2;
-    let paddleTop = player._uEntityPosition.y + player.height / 2;
-    let paddleBottom = player._uEntityPosition.y - player.height / 2;
-    paddleLeft *= currentScale[0];
-    paddleRight *= currentScale[0];
-    paddleTop *= currentScale[1];
-    paddleBottom *= currentScale[1];
-
-    let ballLeft = ball._uEntityPosition.x - ball.radius;
-    let ballRight = ball._uEntityPosition.x + ball.radius;
-    let ballTop = ball._uEntityPosition.y + ball.radius;
-    let ballBottom = ball._uEntityPosition.y - ball.radius;
-    ballLeft *= currentScale[0];
-    ballRight *= currentScale[0];
-    ballTop *= currentScale[1];
-    ballBottom *= currentScale[1];
-
-
-    // Vérification de collision
     if (
-        paddleLeft < ballRight &&
-        paddleRight > ballLeft &&
-        paddleTop > ballBottom &&
-        paddleBottom < ballTop
+        player.boundingBoxLeft < ball.boundingBoxRight &&
+        player.boundingBoxRight > ball.boundingBoxLeft &&
+        player.boundingBoxTop > ball.boundingBoxBottom &&
+        player.boundingBoxBottom < ball.boundingBoxTop
     ) {
-        // Collision détectée
         ball.direction.x = -ball.direction.x;
-        // Replacement
         if (ball.direction.x > 0.)
-            ball._uEntityPosition.x = paddleRight + ball.radius;
+            ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
         else if (ball.direction.x < 0.)
-            ball._uEntityPosition.x = paddleLeft - ball.radius;
+            ball._uEntityPosition.x = player.boundingBoxLeft - ball.radius;
     }
 }
 
