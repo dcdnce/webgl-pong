@@ -57,6 +57,7 @@ class Ball extends Mesh {
             this._uEntityPosition.x,
             this._uEntityPosition.y
         );
+		this.gl.useProgram(null);
     }
 }
 
