@@ -72,5 +72,4 @@ class Mesh {
 	}
 }
 
-// Exporte la classe Mesh pour qu'elle puisse être importée ailleurs
 export default Mesh;

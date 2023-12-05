@@ -1,8 +1,5 @@
-- Bounding Box in Class ✅
-- Collision ? -> decaler un objet au dehors de l'autre ✅
-- refactoriser collisions
-- Scene Class ?
+- collision player wall
+- certaines Collision non prises en compte
 
 - UpdatePosition in shader ?
 - refactoriser uScalingFactor
-- Common shader for game entities ✅

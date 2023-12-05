@@ -16,11 +16,13 @@ class Paddle extends Mesh {
 		},
 		];
 
+		let widthHalf = width/2.;
+		let heightHalf = height/2.;
 		const vertices = [
-			new Vertex (new Vec2(-width, -height), color),
-			new Vertex (new Vec2(width, -height), color),
-			new Vertex (new Vec2(-width, height), color),
-			new Vertex (new Vec2(width, height), color)
+			new Vertex (new Vec2(-widthHalf, -heightHalf), color),
+			new Vertex (new Vec2(widthHalf, -heightHalf), color),
+			new Vertex (new Vec2(-widthHalf, heightHalf), color),
+			new Vertex (new Vec2(widthHalf, heightHalf), color)
 		];
 
 		const indices = [0, 1, 2, 1, 2, 3];
@@ -31,29 +33,41 @@ class Paddle extends Mesh {
 		this.speed = 2.0;
 		this.width = width;
 		this.height = height;
+		this.widthHalf = width/2.;
+		this.heightHalf = height/2.;
 	}
 
-	updatePosition(deltaTime) {
+	updatePosition(deltaTime)
+	{
+		const move = this.speed * deltaTime;
 		if (upKeyPressed)
-        	this._uEntityPosition.y += this.speed * deltaTime;
+		{
+        	this._uEntityPosition.y += move;
+		}
 		else if (downKeyPressed)
-        	this._uEntityPosition.y -= this.speed * deltaTime;
+		{
+        	this._uEntityPosition.y -= move;
+		}
 		// else if (rightKeyPressed)
         // 	this._uEntityPosition.x += this.speed * deltaTime;
 		// else if (leftKeyPressed)
         // 	this._uEntityPosition.x -= this.speed * deltaTime;
+	}
+
+	updateUniform() {
 		this.gl.useProgram(this.attachedShader.program);
 		this.gl.uniform2f(
 			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
 			this._uEntityPosition.x,
 			this._uEntityPosition.y)	
+		this.gl.useProgram(null);
 	}
 
 	computeBoundingBox(currentScale) {
-		this.boundingBoxLeft = this._uEntityPosition.x - this.width / 2;
-		this.boundingBoxRight = this._uEntityPosition.x + this.width / 2;
-		this.boundingBoxTop = this._uEntityPosition.y + this.height / 2;
-		this.boundingBoxBottom = this._uEntityPosition.y - this.height / 2;
+		this.boundingBoxLeft = this._uEntityPosition.x - this.widthHalf;
+		this.boundingBoxRight = this._uEntityPosition.x + this.widthHalf;
+		this.boundingBoxTop = this._uEntityPosition.y + this.heightHalf;
+		this.boundingBoxBottom = this._uEntityPosition.y - this.heightHalf;
 		this.boundingBoxLeft *= currentScale[0];
 		this.boundingBoxRight *= currentScale[0];
 		this.boundingBoxTop *= currentScale[1];

@@ -28,7 +28,7 @@ async function init() {
     aspectRatio = glCanvas.width / glCanvas.height;
     currentScale = [1.0, aspectRatio];
 
-    player = new Paddle(0.01, 0.1, new Vec3(0., 0., 0.), new Vec2(-0.9, -0.9));
+    player = new Paddle(0.01, 0.2, new Vec3(0., 0., 0.), new Vec2(-0.9, 0.));
     await player.setup();
     ball = new Ball(0.02, 1, new Vec3(0., 0., 0.));
     await ball.setup()
@@ -41,11 +41,6 @@ function drawLoop() {
     gl.clearColor(0.8, 0.9, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // Delta time
-    const currentTime = performance.now();
-    const deltaTime = (currentTime - previousTime) / 1000.0;
-    previousTime = currentTime;
-
     // TO REMOVE - scaling factor
     gl.useProgram(ball.attachedShader.program);
     uScalingFactor = gl.getUniformLocation(ball.attachedShader.program, "uScalingFactor");
@@ -54,11 +49,21 @@ function drawLoop() {
     uScalingFactor = gl.getUniformLocation(player.attachedShader.program, "uScalingFactor");
     gl.uniform2fv(uScalingFactor, currentScale);
 
-    // Collisions
-    collisions();
-    // Update positions
+    // Delta time
+    const currentTime = performance.now();
+    const deltaTime = (currentTime - previousTime) / 1000.0;
+    previousTime = currentTime;
+
+    // Positions, events, etc
     ball.updatePosition(deltaTime);
     player.updatePosition(deltaTime);
+
+    // Collisions
+    collisions();
+
+    // Update uniforms (position in shader)
+    ball.updateUniform();
+    player.updateUniform();
 
     // Draw
     player.draw();
@@ -72,19 +77,22 @@ function collisions() {
     player.computeBoundingBox(currentScale);
 
     // Ball -> wall
-    if ((ball._uEntityPosition.x - ball.radius) * currentScale[0] < -1)
+    if (ball.boundingBoxLeft <= -1)
         ball.direction.x = Math.abs(ball.direction.x);
-    else if ((ball._uEntityPosition.x + ball.radius) * currentScale[0] > 1.)
+    else if (ball.boundingBoxRight >= 1.)
         ball.direction.x = -Math.abs(ball.direction.x);
-    else if ((ball._uEntityPosition.y + ball.radius) * currentScale[1] > 1.)
+    else if (ball.boundingBoxTop >= 1.)
         ball.direction.y = -Math.abs(ball.direction.y);
-    else if ((ball._uEntityPosition.y - ball.radius) * currentScale[1] < -1.)
+    else if (ball.boundingBoxBottom <= -1.)
         ball.direction.y = Math.abs(ball.direction.y);
 
-    // Player -> wall
-
-
     playerBallCollision()
+
+    // Player -> wall
+    if (player.boundingBoxTop > 1.)
+        player._uEntityPosition.y = 1. - player.heightHalf;
+    else if (player.boundingBoxBottom < -1.)
+        player._uEntityPosition.y = -1. + player.heightHalf;
 }
 
 function playerBallCollision() {

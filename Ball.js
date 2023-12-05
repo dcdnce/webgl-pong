@@ -44,19 +44,22 @@ class Ball extends Mesh {
 		this.direction.normalize();	  
 	}
 
-    updatePosition(deltaTime) {
+	updatePosition(deltaTime) {
         this.speed += this.acceleration * deltaTime;
 
 		//new position = position + (direction * speed)
         const deltaPosition = this.direction.clone().multiplyScalar(this.speed * deltaTime);
         this._uEntityPosition.add(deltaPosition);
+	}
 
+    updateUniform() {
         this.gl.useProgram(this.attachedShader.program);
         this.gl.uniform2f(
             this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
             this._uEntityPosition.x,
             this._uEntityPosition.y
         );
+		this.gl.useProgram(null);
     }
 
 	computeBoundingBox(currentScale) {
