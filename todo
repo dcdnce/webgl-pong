@@ -1,5 +1,6 @@
-- collision player wall
-- certaines Collision non prises en compte
+- Collision - player wall
+- Collision - ball reste dans les murs
+- Collision - certaines non prises en compte
 
 - UpdatePosition in shader ?
 - refactoriser uScalingFactor
