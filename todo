@@ -1,6 +1,6 @@
-- Bounding Box Class
+- Bounding Box in Class
+- Collision ? -> decaler un objet au dehors de l'autre
 - Scene Class ?
-- Collisions (paddle, wall)
 
 - UpdatePosition in shader ?
 - Factoriser emplacement uScalingFactor

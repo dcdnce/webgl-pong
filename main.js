@@ -28,7 +28,7 @@ async function init() {
     aspectRatio = glCanvas.width / glCanvas.height;
     currentScale = [1.0, aspectRatio];
 
-    player = new Paddle(0.05, 0.15, new Vec3(0., 0., 0.));
+    player = new Paddle(0.01, 0.1, new Vec3(0., 0., 0.));
     await player.setup();
     ball = new Ball(0.05, 4, new Vec3(0., 0., 0.));
     await ball.setup()
@@ -55,7 +55,7 @@ function drawLoop() {
     gl.uniform2fv(uScalingFactor, currentScale);
 
     // Collisions
-    collisionWithWall(ball);
+    collisions();
     // Update positions
     ball.updatePosition(deltaTime);
     player.updatePosition(deltaTime);
@@ -67,30 +67,54 @@ function drawLoop() {
     requestAnimationFrame(drawLoop);
 }
 
-function collisionWithWall(ball) {
+function collisions() {
+    // Ball -> wall
     if ((ball._uEntityPosition.x - ball.radius) * currentScale[0] < -1)
-    {
         ball.direction.x = Math.abs(ball.direction.x);
-        // ball.acceleration += 0.01;
-    }
-
-    if ((ball._uEntityPosition.x + ball.radius) * currentScale[0] > 1.)
-    {
+    else if ((ball._uEntityPosition.x + ball.radius) * currentScale[0] > 1.)
         ball.direction.x = -Math.abs(ball.direction.x);
-        // ball.acceleration += 0.01;
-    }
-
-    if ((ball._uEntityPosition.y + ball.radius) * currentScale[1] > 1.)
-    {
+    else if ((ball._uEntityPosition.y + ball.radius) * currentScale[1] > 1.)
         ball.direction.y = -Math.abs(ball.direction.y);
-        // ball.acceleration += 0.01;
+    else if ((ball._uEntityPosition.y - ball.radius) * currentScale[1] < -1.)
+        ball.direction.y = Math.abs(ball.direction.y);
+
+    if (playerBallCollision())
+        ball.direction.x = -ball.direction.x;
+}
+
+function playerBallCollision() {
+    let paddleLeft = player._uEntityPosition.x - player.width / 2;
+    let paddleRight = player._uEntityPosition.x + player.width / 2;
+    let paddleTop = player._uEntityPosition.y + player.height / 2;
+    let paddleBottom = player._uEntityPosition.y - player.height / 2;
+    paddleLeft *= currentScale[0];
+    paddleRight *= currentScale[0];
+    paddleTop *= currentScale[1];
+    paddleBottom *= currentScale[1];
+
+    let ballLeft = ball._uEntityPosition.x - ball.radius;
+    let ballRight = ball._uEntityPosition.x + ball.radius;
+    let ballTop = ball._uEntityPosition.y + ball.radius;
+    let ballBottom = ball._uEntityPosition.y - ball.radius;
+    ballLeft *= currentScale[0];
+    ballRight *= currentScale[0];
+    ballTop *= currentScale[1];
+    ballBottom *= currentScale[1];
+
+
+    // Vérification de collision
+    if (
+        paddleLeft < ballRight &&
+        paddleRight > ballLeft &&
+        paddleTop > ballBottom &&
+        paddleBottom < ballTop
+    ) {
+        // Collision détectée
+        return true;
     }
 
-    if ((ball._uEntityPosition.y - ball.radius) * currentScale[1] < -1.)
-    {
-        ball.direction.y = Math.abs(ball.direction.y);
-        // ball.acceleration += 0.01;
-    }
+    // Pas de collision
+    return false;
 }
 
 export default gl;

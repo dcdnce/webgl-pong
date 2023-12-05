@@ -1,7 +1,7 @@
 import Mesh from './Mesh.js'
 import { Vec2, Vec3 } from './Vector.js';
 import Vertex from './Vertex.js';
-import { upKeyPressed, downKeyPressed } from './Event.js';
+import { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed } from './Event.js';
 
 class Paddle extends Mesh {
 	constructor (width, height, color = null, position = new Vec2(0., 0.)) {
@@ -28,13 +28,20 @@ class Paddle extends Mesh {
 		super(vertices, indices, (color == null), shaderInfo);
 
 		this._uEntityPosition = position;
+		this.speed = 1.0;
+		this.width = width;
+		this.height = height;
 	}
 
 	updatePosition(deltaTime) {
 		if (upKeyPressed)
-        	this._uEntityPosition.y += 0.5 * deltaTime;
-		if (downKeyPressed)
-        	this._uEntityPosition.y -= 0.5 * deltaTime;
+        	this._uEntityPosition.y += this.speed * deltaTime;
+		else if (downKeyPressed)
+        	this._uEntityPosition.y -= this.speed * deltaTime;
+		else if (rightKeyPressed)
+        	this._uEntityPosition.x += this.speed * deltaTime;
+		else if (leftKeyPressed)
+        	this._uEntityPosition.x -= this.speed * deltaTime;
 		this.gl.useProgram(this.attachedShader.program);
 		this.gl.uniform2f(
 			this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
