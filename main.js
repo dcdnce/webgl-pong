@@ -78,8 +78,7 @@ function collisions() {
     else if ((ball._uEntityPosition.y - ball.radius) * currentScale[1] < -1.)
         ball.direction.y = Math.abs(ball.direction.y);
 
-    if (playerBallCollision())
-        ball.direction.x = -ball.direction.x;
+    playerBallCollision()
 }
 
 function playerBallCollision() {
@@ -110,11 +109,13 @@ function playerBallCollision() {
         paddleBottom < ballTop
     ) {
         // Collision détectée
-        return true;
+        ball.direction.x = -ball.direction.x;
+        // Replacement
+        if (ball.direction.x > 0.)
+            ball._uEntityPosition.x = paddleRight + ball.radius;
+        else if (ball.direction.x < 0.)
+            ball._uEntityPosition.x = paddleLeft - ball.radius;
     }
-
-    // Pas de collision
-    return false;
 }
 
 export default gl;
