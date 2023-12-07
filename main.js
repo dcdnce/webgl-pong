@@ -56,7 +56,7 @@ function drawLoop() {
 
     // Positions, events, etc
     ball.updatePosition(deltaTime);
-    player.updatePosition(deltaTime);
+    player.updatePosition(deltaTime, currentScale);
 
     // Collisions
     collisions();
@@ -90,9 +90,9 @@ function collisions() {
 
     // Player -> wall
     if (player.boundingBoxTop > 1.)
-        player._uEntityPosition.y = 1. - player.heightHalf;
+        player._uEntityPosition.y -= player.boundingBoxTop - 1.;
     else if (player.boundingBoxBottom < -1.)
-        player._uEntityPosition.y = -1. + player.heightHalf;
+        player._uEntityPosition.y += -(player.boundingBoxBottom + 1.);
 }
 
 function playerBallCollision() {
