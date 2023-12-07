@@ -16,10 +16,22 @@
 		canvas {
 			border: 1px solid #000; /* Ajoutez une bordure pour visualiser le canvas */
 		}
+
+		#overlay {
+			position: absolute;
+			left: 10px;
+			top: 10px;
+		}
 	</style>
 </head>
 <body>
-    <canvas id="glcanvas" width="600" height="480"></canvas>
+	<div style="position:relative;">
+    	<canvas id="glcanvas" width="600" height="480"></canvas>
+		<div id="overlay">
+			<div><span id="score"></span></div>
+		</div>
+	</div>
+	<script src="overlay.js" type="module"></script>
 	<script src="Vector.js" type="module"></script>
 	<script src="Vertex.js" type="module"></script>
 	<script src="Paddle.js" type="module"></script>

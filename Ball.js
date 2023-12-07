@@ -45,11 +45,17 @@ class Ball extends Mesh {
 	}
 
 	updatePosition(deltaTime) {
-        this.speed += this.acceleration * deltaTime;
+        const currentSpeed = this.speed + this.acceleration;
 
 		//new position = position + (direction * speed)
-        const deltaPosition = this.direction.clone().multiplyScalar(this.speed * deltaTime);
+        const deltaPosition = this.direction.clone().multiplyScalar(currentSpeed * deltaTime);
         this._uEntityPosition.add(deltaPosition);
+	}
+
+	reset() {
+		this._uEntityPosition.x = 0.;
+		this._uEntityPosition.y = 0.;
+		this.acceleration = 0.;
 	}
 
     updateUniform() {

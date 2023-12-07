@@ -1,6 +1,7 @@
 import { Vec3, Vec2 } from './Vector.js';
 import Ball from './Ball.js';
 import Paddle from './Paddle.js'
+import { scoreNode } from './overlay.js';
 
 let gl = null;
 let glCanvas = null;
@@ -9,15 +10,20 @@ let glCanvas = null;
 let aspectRatio;
 let currentScale = [1.0, 1.0];
 
+// Time
+let currentTime;
+let deltaTime;
+let previousTime = 0.0;
+
 // Entities
 let ball;
 let player;
 
+// Game related
+let score = [];
+
 // Rendering data shared with the scaler
 let uScalingFactor;
-
-// Animation timing
-let previousTime = 0.0;
 
 window.addEventListener("load", init, false);
 
@@ -32,6 +38,8 @@ async function init() {
     await player.setup();
     ball = new Ball(0.02, 1, new Vec3(0., 0., 0.));
     await ball.setup()
+
+    score = [0, 0];
 
     drawLoop();
 }
@@ -50,8 +58,8 @@ function drawLoop() {
     gl.uniform2fv(uScalingFactor, currentScale);
 
     // Delta time
-    const currentTime = performance.now();
-    const deltaTime = (currentTime - previousTime) / 1000.0;
+    currentTime = performance.now();
+    deltaTime = (currentTime - previousTime) / 1000.0;
     previousTime = currentTime;
 
     // Positions, events, etc
@@ -69,6 +77,8 @@ function drawLoop() {
     player.draw();
     ball.draw();
 
+    scoreNode.nodeValue = score[0] + " | " + score[1];
+
     requestAnimationFrame(drawLoop);
 }
 
@@ -77,14 +87,20 @@ function collisions() {
     player.computeBoundingBox(currentScale);
 
     // Ball -> wall
-    if (ball.boundingBoxLeft <= -1)
+    if (ball.boundingBoxLeft <= -1) {
         ball.direction.x = Math.abs(ball.direction.x);
-    else if (ball.boundingBoxRight >= 1.)
+        ball.reset();
+        score[1] += 1;
+    }
+    else if (ball.boundingBoxRight >= 1.) {
         ball.direction.x = -Math.abs(ball.direction.x);
-    else if (ball.boundingBoxTop >= 1.)
+    }
+    else if (ball.boundingBoxTop >= 1.) {
         ball.direction.y = -Math.abs(ball.direction.y);
-    else if (ball.boundingBoxBottom <= -1.)
+    }
+    else if (ball.boundingBoxBottom <= -1.) {
         ball.direction.y = Math.abs(ball.direction.y);
+    }
 
     playerBallCollision()
 
@@ -107,6 +123,7 @@ function playerBallCollision() {
             ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
         else if (ball.direction.x < 0.)
             ball._uEntityPosition.x = player.boundingBoxLeft - ball.radius;
+        ball.acceleration += 1;
     }
 }
 
