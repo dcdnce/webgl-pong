@@ -40,7 +40,8 @@ class Ball extends Mesh {
 		this._uEntityPosition = new Vec2(0., 0.);
 		this.speed = 2;
 		this.acceleration = 0.;
-		this.direction = new Vec2(-Math.random(), Math.random());
+		// this.direction = new Vec2(-Math.random(), Math.random());
+		this.direction = new Vec2(-1., 0.);
 		this.direction.normalize();	  
 	}
 

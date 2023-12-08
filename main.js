@@ -2,6 +2,7 @@ import { Vec3, Vec2 } from './Vector.js';
 import Ball from './Ball.js';
 import Paddle from './Paddle.js'
 import { scoreNode } from './overlay.js';
+import { doIntersect } from './collision.js';
 
 let gl = null;
 let glCanvas = null;
@@ -62,6 +63,7 @@ function drawLoop() {
     deltaTime = (currentTime - previousTime) / 1000.0;
     previousTime = currentTime;
 
+
     // Positions, events, etc
     ball.updatePosition(deltaTime);
     player.updatePosition(deltaTime, currentScale);
@@ -86,6 +88,10 @@ function collisions() {
     ball.computeBoundingBox(currentScale);
     player.computeBoundingBox(currentScale);
 
+
+    // Ball -> player
+    playerBallCollision()
+
     // Ball -> wall
     if (ball.boundingBoxLeft <= -1) {
         ball.direction.x = Math.abs(ball.direction.x);
@@ -102,8 +108,6 @@ function collisions() {
         ball.direction.y = Math.abs(ball.direction.y);
     }
 
-    playerBallCollision()
-
     // Player -> wall
     if (player.boundingBoxTop > 1.)
         player._uEntityPosition.y -= player.boundingBoxTop - 1.;
@@ -111,13 +115,47 @@ function collisions() {
         player._uEntityPosition.y += -(player.boundingBoxBottom + 1.);
 }
 
+let lastBallPosition = null;
+
 function playerBallCollision() {
-    if (
-        player.boundingBoxLeft < ball.boundingBoxRight &&
-        player.boundingBoxRight > ball.boundingBoxLeft &&
-        player.boundingBoxTop > ball.boundingBoxBottom &&
-        player.boundingBoxBottom < ball.boundingBoxTop
-    ) {
+    if (lastBallPosition == null) {
+        lastBallPosition = ball._uEntityPosition;
+        return ;
+    }
+
+    // if (
+    //     player.boundingBoxLeft < ball.boundingBoxRight &&
+    //     player.boundingBoxRight > ball.boundingBoxLeft &&
+    //     player.boundingBoxTop > ball.boundingBoxBottom &&
+    //     player.boundingBoxBottom < ball.boundingBoxTop
+    // ) {
+    //     console.log("typical");
+    //     ball.direction.x = -ball.direction.x;
+    //     if (ball.direction.x > 0.)
+    //         ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
+    //     else if (ball.direction.x < 0.)
+    //         ball._uEntityPosition.x = player.boundingBoxLeft - ball.radius;
+    //     ball.acceleration += 1;
+    //     typical = true;
+    // }
+
+        // console.log(lastBallPosition);
+        // console.log(ball._uEntityPosition);
+        // console.log(new Vec2(player.boundingBoxRight, 1.));
+        // console.log(new Vec2(player.boundingBoxRight, -1.));
+        // console.log('\n');
+
+    if (doIntersect(
+        // lastBallPosition, 
+        // ball._uEntityPosition, 
+        new Vec2(lastBallPosition.x + ball.radius, 0.),
+        new Vec2(ball._uEntityPosition - ball.radius, 0.),
+        // new Vec2(player.boundingBoxRight, player.boundingBoxTop),
+        // new Vec2(player.boundingBoxRight, player.boundingBoxBottom)))
+        new Vec2(player.boundingBoxRight, 1.),
+        new Vec2(player.boundingBoxRight, -1.)))
+    {
+        console.log("line intersect!");
         ball.direction.x = -ball.direction.x;
         if (ball.direction.x > 0.)
             ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
@@ -125,6 +163,8 @@ function playerBallCollision() {
             ball._uEntityPosition.x = player.boundingBoxLeft - ball.radius;
         ball.acceleration += 1;
     }
+
+    lastBallPosition = ball._uEntityPosition;
 }
 
 export default gl;

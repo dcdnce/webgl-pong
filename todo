@@ -1,6 +1,6 @@
 - Collision - player wall ✅
 - Collision - ball reste dans les murs
-- Collision - certaines non prises en compte
+- Collision - pas de collision si trop rapide
 
 - UpdatePosition in shader ?
 - refactoriser uScalingFactor
