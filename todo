@@ -1,6 +1,6 @@
-- Collision - player wall ✅
+- Collision - doIntersect angle aigus
 - Collision - ball reste dans les murs
-- Collision - pas de collision si trop rapide
+- Collision - refactor
 
 - UpdatePosition in shader ?
 - refactoriser uScalingFactor
