@@ -117,6 +117,7 @@ function collisions() {
 
 let lastBallPos = null;
 function playerBallCollision() {
+
     if (lastBallPos == null)
     {
         lastBallPos = ball._uEntityPosition.clone();
@@ -156,7 +157,6 @@ function playerBallCollision() {
     }
     if (doesIntersect)
     {
-        console.log("INTERSECT");
         ball.direction.x = -ball.direction.x;
         ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
         ball.acceleration += 1;
@@ -167,26 +167,6 @@ function playerBallCollision() {
     {
         lastBallPos = ball._uEntityPosition.clone();
     }
-}
-
-// http://paulbourke.net/geometry/pointlineplane/
-function checkIntersectionTwoLines(v1, v2, v3, v4) {
-
-    let x4x3 = v4.x - v3.x;
-    let y1y3 = v1.y - v3.y;    
-    let y4y3 = v4.y - v3.y;
-    let x1x3 = v1.x - v3.x;
-    let x2x1 = v2.x - v1.x;
-    let y2y1 = v2.y - v1.y;
-
-    let a = ((x4x3 * y1y3) - (y4y3 * x1x3)) / ((y4y3 * x2x1) - (x4x3 * y2y1));
-    let b = ((x2x1 * y1y3) - (y2y1 * x1x3)) / ((y4y3 * x2x1) - (x4x3 * y2y1));
-
-    if (a >= 0 && a <= 1 && b >= 0 && b <= 1) {
-        return true;
-    }
-
-    return false;
 }
 
 export default gl;
