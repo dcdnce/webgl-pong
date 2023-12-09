@@ -113,25 +113,72 @@ function collisions() {
         player._uEntityPosition.y += -(player.boundingBoxBottom + 1.);
 }
 
+let lastBallPos = null;
 function playerBallCollision() {
-    let nextBallPos = ball._uEntityPosition.clone()
-        .add(ball.direction.clone()
-        .multiplyScalar((ball.speed + ball.acceleration) * deltaTime));
-
-    if (doIntersect(
-        new Vec2(nextBallPos.x - ball.radius, 0.),
-        new Vec2(ball._uEntityPosition.x + ball.radius, 0.),
-        new Vec2(player.boundingBoxRight, player.boundingBoxTop),
-        new Vec2(player.boundingBoxLeft, player.boundingBoxBottom)))
+    if (lastBallPos == null)
     {
-        console.log("line intersect!");
+        lastBallPos = ball._uEntityPosition.clone();
+        return ;
+    }
+
+    let doesIntersect = false;
+    if (ball.direction.y < 0.) // vers le bas
+    {
+        doesIntersect = doIntersect(
+        new Vec2(lastBallPos.x + ball.radius, (lastBallPos.y + ball.radius) * currentScale[1]),
+        new Vec2(ball.boundingBoxLeft, ball.boundingBoxBottom),
+        new Vec2(player.boundingBoxRight, player.boundingBoxBottom),
+        new Vec2(player.boundingBoxLeft, player.boundingBoxTop));
+    }
+    else if (ball.direction.y > 0.) // vers le haut
+    {
+        doesIntersect = doIntersect(
+        new Vec2(lastBallPos.x + ball.radius, (lastBallPos.y - ball.radius) * currentScale[1]),
+        new Vec2(ball.boundingBoxLeft, ball.boundingBoxTop),
+        new Vec2(player.boundingBoxLeft, player.boundingBoxBottom),
+        new Vec2(player.boundingBoxRight, player.boundingBoxTop));
+    }
+    // if (checkIntersectionTwoLines(
+    //     ball._uEntityPosition.x, ball._uEntityPosition.y,
+    //     lastBallPos.x, lastBallPos.y,
+    //     player._uEntityPosition.x, player.boundingBoxTop,
+    //     player._uEntityPosition.x, player.boundingBoxBottom))
+    if (doesIntersect)
+    {
+        // console.log("line intersect!")
         ball.direction.x = -ball.direction.x;
         if (ball.direction.x > 0.)
             ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
         else (ball.direction.x < 0.)
             ball._uEntityPosition.x = player.boundingBoxLeft - ball.radius;
         ball.acceleration += 1;
+        lastBallPos = null;
+    }
+    else
+    {
+        lastBallPos = ball._uEntityPosition.clone();
     }
 }
+
+// http://paulbourke.net/geometry/pointlineplane/
+function checkIntersectionTwoLines(x1, y1, x2, y2, x3, y3, x4, y4) {
+
+    let x4x3 = x4 - x3;
+    let y1y3 = y1 - y3;    
+    let y4y3 = y4 - y3;
+    let x1x3 = x1 - x3;
+    let x2x1 = x2 - x1;
+    let y2y1 = y2 - y1;
+
+    let a = ((x4x3 * y1y3) - (y4y3 * x1x3)) / ((y4y3 * x2x1) - (x4x3 * y2y1));
+    let b = ((x2x1 * y1y3) - (y2y1 * x1x3)) / ((y4y3 * x2x1) - (x4x3 * y2y1));
+
+    if (a >= 0 && a <= 1 && b >= 0 && b <= 1) {
+        return true;
+    }
+
+    return false;
+}
+
 
 export default gl;
