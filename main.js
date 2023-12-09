@@ -126,7 +126,7 @@ function playerBallCollision() {
     }
 
     let doesIntersect = false;
-    if (ball.direction.y < 0.) // vers le bas
+    if (ball.direction.y < 0.) // ball y negatif
     {
         // bottom current ball
         doesIntersect = doIntersect(
@@ -141,7 +141,7 @@ function playerBallCollision() {
         new Vec2(player.boundingBoxRight, player.boundingBoxBottom),
         new Vec2(player.boundingBoxLeft, player.boundingBoxTop));
     }
-    else // vers le haut
+    else // balle y positif
     { 
         // top current ball
         doesIntersect = doIntersect(
