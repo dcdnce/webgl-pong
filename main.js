@@ -3,6 +3,7 @@ import Ball from './Ball.js';
 import Paddle from './Paddle.js'
 import { scoreNode } from './overlay.js';
 import { doIntersect } from './collision.js';
+import { upKeyPressed, downKeyPressed } from './Event.js';
 
 let gl = null;
 let glCanvas = null;
@@ -160,6 +161,10 @@ function playerBallCollision() {
         ball.direction.x = -ball.direction.x;
         ball._uEntityPosition.x = player.boundingBoxRight + ball.radius;
         ball.acceleration += 1;
+        if (upKeyPressed)
+            ball.direction.y = 1.;
+        if (downKeyPressed)
+            ball.direction.y = -1.;
         ball.computeBoundingBox(currentScale);
         lastBallPos = null;
     }

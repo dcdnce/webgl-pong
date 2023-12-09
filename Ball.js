@@ -1,5 +1,5 @@
 import Mesh from './Mesh.js'
-import { Vec2, Vec3 } from './Vector.js';
+import { Vec2 } from './Vector.js';
 import Vertex from './Vertex.js';
 
 class Ball extends Mesh {
@@ -40,8 +40,8 @@ class Ball extends Mesh {
 		this._uEntityPosition = new Vec2(0., 0.);
 		this.speed = 0.5;
 		this.acceleration = 0.;
-		// this.direction = new Vec2(-Math.random(), Math.random());
-		this.direction = new Vec2(-1., 0.);
+		this.direction = new Vec2(-Math.random(), Math.random());
+		// this.direction = new Vec2(-1., 0.);
 		this.direction.normalize();	  
 	}
 
@@ -56,8 +56,8 @@ class Ball extends Mesh {
 	reset() {
 		this._uEntityPosition.x = 0.;
 		this._uEntityPosition.y = 0.;
-		// this.direction = new Vec2(-Math.random(), Math.random());
-		this.direction = new Vec2(-1., 0.);
+		this.direction = new Vec2(-Math.random(), Math.random());
+		// this.direction = new Vec2(-1., 0.);
 		this.acceleration = 0.;
 	}
 
