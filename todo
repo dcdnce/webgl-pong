@@ -1,6 +1,5 @@
-- Collision - doIntersect angle aigus
 - Collision - ball reste dans les murs
-- Collision - refactor
+- Collision - meilleur collision paddle/ball
 
 - UpdatePosition in shader ?
 - refactoriser uScalingFactor
